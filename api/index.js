@@ -1,27 +1,23 @@
 export default async function handler(req, res) {
-    if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method Not Allowed" });
-    }
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Only POST requests allowed" });
+  }
 
-    try {
-        const { url } = req.body;
-        const apiKey = "e03d13f8b92d45159ad23b52d9e30a9d"; // Replace with your actual key
+  const { url } = req.body;
+  if (!url) {
+    return res.status(400).json({ error: "URL is required" });
+  }
 
-        const response = await fetch("https://www.bing.com/indexnow", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                host: new URL(url).hostname,
-                key: apiKey,
-                keyLocation: `https://${new URL(url).hostname}/indexnow-key.txt`,
-                urlList: [url]
-            }),
-        });
+ const INDEXNOW_KEY = "e1908b57dc524ff992fb97ebc5f635ad"; // 🔹 Replace with your actual key
 
-        const data = await response.text();
-        return res.status(200).json({ response: data });
+const indexNowUrl = `https://www.bing.com/indexnow?url=${encodeURIComponent(url)}&key=${INDEXNOW_KEY}`;
 
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-    }
+
+  try {
+    const response = await fetch(indexNowUrl, { method: "GET" });
+    const data = await response.text();
+    return res.status(200).json({ message: "Submitted", response: data });
+  } catch (error) {
+    return res.status(500).json({ error: "Indexing failed", details: error.message });
+  }
 }
