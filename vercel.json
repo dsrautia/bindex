@@ -1,9 +1,6 @@
 {
   "version": 2,
   "routes": [
-    {
-      "src": "/submit",
-      "dest": "index.js"
-    }
+    { "src": "/api/index", "dest": "/api/index.js" }
   ]
 }
